@@ -132,7 +132,8 @@ public class AnimationGame implements ActionListener {
 	void checkWin() {
 		if (player.health <= 0) {
 			// pop up message that the game is over
-			System.out.println("game over!"); // TEMPORARY FIX
+			JOptionPane.showMessageDialog(null, "YOU LOSE" , "L bozo",
+					JOptionPane.PLAIN_MESSAGE);	
 			panel.repaint(); // to update player health bar
 			timerPlayer.stop();
 			timerMain.stop();
@@ -154,10 +155,10 @@ public class AnimationGame implements ActionListener {
 			player.x -= player.speed;
 		if (mainKL.isKeyDown('D') && player.x + player.width < panW)
 			player.x += player.speed;
-//		if (mainKL.isKeyDown('W') && player.y > 0)
-//			player.y -= player.speed;
-//		if (mainKL.isKeyDown('S') && player.y + player.height < panH)
-//			player.y += player.speed;
+		if (mainKL.isKeyDown('W') && player.y > 0)
+			player.y -= player.speed;
+		if (mainKL.isKeyDown('S') && player.y + player.height < panH)
+			player.y += player.speed;
 
 		// shoot
 		if (mainKL.isKeyDown(' '))
