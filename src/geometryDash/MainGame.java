@@ -12,12 +12,16 @@ import java.io.IOException;
 public class MainGame {
 
 	public static void main(String[] args) {
-		new MainGame();
+		new MainGame().run();
 	}
+
+	static final int PANW = 1000;
+	static final int PANH = 600;
 
 	JFrame frame;
 	JPanel drPanel, txtPanel;
 	JLabel scoreLabel, highScoreLabel;
+	JButton startBtn;
 
 	BufferedImage floor, background;
 
@@ -31,12 +35,7 @@ public class MainGame {
 	Timer timer;
 
 	MainGame() {
-		init();
 		createAndShowGUI();
-	}
-
-	void init() {
-
 	}
 
 	void createAndShowGUI() {
@@ -67,24 +66,25 @@ public class MainGame {
 		floor = loadImage("images/floor.jpg");
 		background = loadImage("images/background.jpg");
 
+		// objects
 		player = new Player();
-		block = new Block(500, 410);
-		spike = new Spike(460, 410);
+		block = new Block(0, 410);
+		spike = new Spike(40, 370);
 
 		frame.add(txtPanel, BorderLayout.NORTH);
 		frame.add(drPanel, BorderLayout.CENTER);
 
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(1000, 600);
+		frame.setSize(PANW, PANH);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 
-		timer = new Timer(100, new mainTimer());
-		timer.start();
+		timer = new Timer(10, new MainTimer());
 	}
 
 	void run() {
-
+		timer.start();
+		player.movePlayer();
 	}
 
 	static BufferedImage loadImage(String filename) {
@@ -103,9 +103,11 @@ public class MainGame {
 		return img;
 	}
 
-	private class DrawingPanel extends JPanel implements MouseListener {
+	private class DrawingPanel extends JPanel implements MouseListener, KeyListener {
 
 		DrawingPanel() {
+			this.addKeyListener(this);
+			this.setFocusable(true);
 		}
 
 		public void paintComponent(Graphics g) {
@@ -119,6 +121,9 @@ public class MainGame {
 			// floor
 			g.drawImage(floor, 0, 450, getWidth(), 500, null);
 
+			// player
+			g.drawImage(player.sprite, player.x, player.y, player.width, player.height, null);
+
 			// block
 			g.drawImage(block.sprite, block.x, block.y, block.width, block.height, null);
 
@@ -128,7 +133,16 @@ public class MainGame {
 
 		@Override
 		public void mousePressed(MouseEvent e) {
+			if (e.getButton() == MouseEvent.BUTTON1) {
+				player.jump();
+			}
+		}
 
+		@Override
+		public void keyPressed(KeyEvent e) {
+			if (e.getKeyCode() == 32) {
+				player.jump();
+			}
 		}
 
 		@Override
@@ -146,13 +160,24 @@ public class MainGame {
 		@Override
 		public void mouseExited(MouseEvent e) {
 		}
+
+		@Override
+		public void keyTyped(KeyEvent e) {
+		}
+
+		@Override
+		public void keyReleased(KeyEvent e) {
+		}
 	}
 
-	class mainTimer implements ActionListener {
+	class MainTimer implements ActionListener {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-
+			player.movePlayer();
+			block.move();
+			spike.move();
+			drPanel.repaint();
 		}
 	}
 }

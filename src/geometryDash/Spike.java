@@ -11,6 +11,11 @@ public class Spike extends Block{
 	}
 	
 	void move() {
-		x -= vx;
+		super.move();
+		collision();
+	}
+	
+	void collision() {
+		
 	}
 }

@@ -19,5 +19,12 @@ public class Block {
 	
 	void move() {
 		x -= vx;
+		if (x + width == 0)
+			x = MainGame.PANW;
+		collision();
+	}
+	
+	void collision() {
+		
 	}
 }
