@@ -8,6 +8,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class MainGame {
 
@@ -19,7 +20,8 @@ public class MainGame {
 	static final int PANH = 600;
 
 	JFrame frame;
-	JPanel drPanel, txtPanel;
+	static JPanel drPanel;
+	JPanel txtPanel;
 	JLabel scoreLabel, highScoreLabel;
 	JButton startBtn;
 
@@ -31,9 +33,12 @@ public class MainGame {
 
 	int scoreCounter = 0;
 	int highScore = 0;
+	int jumpCounter = 0;
 
-	Timer timer;
+	boolean shipMode = false;
 
+	Timer mainTimer;
+	
 	MainGame() {
 		createAndShowGUI();
 	}
@@ -70,7 +75,7 @@ public class MainGame {
 		player = new Player();
 		block = new Block(0, 410);
 		spike = new Spike(40, 370);
-
+		
 		frame.add(txtPanel, BorderLayout.NORTH);
 		frame.add(drPanel, BorderLayout.CENTER);
 
@@ -79,11 +84,11 @@ public class MainGame {
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 
-		timer = new Timer(10, new MainTimer());
+		mainTimer = new Timer(10, new MainTimer());
 	}
 
 	void run() {
-		timer.start();
+		mainTimer.start();
 		player.movePlayer();
 	}
 
@@ -107,6 +112,7 @@ public class MainGame {
 
 		DrawingPanel() {
 			this.addKeyListener(this);
+			this.addMouseListener(this);
 			this.setFocusable(true);
 		}
 
@@ -122,7 +128,11 @@ public class MainGame {
 			g.drawImage(floor, 0, 450, getWidth(), 500, null);
 
 			// player
-			g.drawImage(player.sprite, player.x, player.y, player.width, player.height, null);
+			if (!shipMode) {
+				g.drawImage(player.playerSprite, player.x, player.y, player.width, player.height, null);
+			} else {
+				g.drawImage(player.shipSprite, player.x, player.y, player.width + 5, player.height, null);
+			}
 
 			// block
 			g.drawImage(block.sprite, block.x, block.y, block.width, block.height, null);
@@ -133,24 +143,34 @@ public class MainGame {
 
 		@Override
 		public void mousePressed(MouseEvent e) {
-			if (e.getButton() == MouseEvent.BUTTON1) {
-				player.jump();
+			if (!shipMode) {
+				if (e.getButton() == MouseEvent.BUTTON1) {
+					player.jump();
+					jumpCounter = 40;
+				}
+			} else {
+				// ship mode
 			}
 		}
 
 		@Override
+		public void mouseReleased(MouseEvent e) {
+		}
+
+		@Override
 		public void keyPressed(KeyEvent e) {
-			if (e.getKeyCode() == 32) {
-				player.jump();
+			if (!shipMode) {
+				if (e.getKeyCode() == 32) {
+					player.jump();
+					jumpCounter = 40;
+				}
+			} else {
+				// ship mode
 			}
 		}
 
 		@Override
 		public void mouseClicked(MouseEvent e) {
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e) {
 		}
 
 		@Override
@@ -175,9 +195,15 @@ public class MainGame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			player.movePlayer();
+
 			block.move();
 			spike.move();
+			collision();
 			drPanel.repaint();
 		}
+	}
+
+	void collision() {
+
 	}
 }
